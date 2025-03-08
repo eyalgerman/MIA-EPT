@@ -113,7 +113,7 @@ def main(args):
     columns = []
 
     for target_col in target_columns:
-        print(f"Target Column: {target_col}")
+        # print(f"Target Column: {target_col}")
         predictions, y_test, task_type = preprocess_and_train(train_points, test_points, target_col, args.include_account)
 
         features.append(y_test)

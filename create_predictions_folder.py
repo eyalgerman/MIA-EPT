@@ -190,7 +190,6 @@ def main(
                         raise FileNotFoundError(f"`prediction.csv` not found in {path}.")
 
 
-
 if __name__ == "__main__":
     args = ArgumentParser().parse()
-    main(type_test=args.type_test, model_name=args.model_name, features_lst=args.columns_lst, time=args.time)
+    main(type_test=args.type_test, model_name=args.classifier_model_name, features_lst=args.columns_lst, time=args.time)

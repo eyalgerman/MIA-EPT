@@ -38,7 +38,7 @@ class ArgumentParser:
                                  default="/dt/shabtaia/dt-sicpa/eyal/MIDST/evaluation_ML", help="Output directory")
         self.parser.add_argument("--epoch", default=10, type=int)
         self.parser.add_argument("--save_model", action='store_true', help="Flag to save the trained classifier model")
-        self.parser.add_argument("--type_test", type=str, default='blackbox_single_table',
+        self.parser.add_argument("--type_test", type=str, default='blackbox_multi_table',
                                  help="Type of test: test or dev")
         self.parser.add_argument("--columns_lst", nargs='+', type=str,
                                  default=["actual", "error", "error_ratio", "accuracy"],
@@ -47,7 +47,7 @@ class ArgumentParser:
         # Create output folder
         self.parser.add_argument("--time", type=str, default="20250218_115430_test",
                                  help="Timestamp for output folder")
-        self.parser.add_argument("--model_name", type=str, default="CatBoost",
+        self.parser.add_argument("--classifier_model_name", type=str, default="CatBoost",
                                  help="Model name: CatBoost, XGBoost, or MLP")
 
 

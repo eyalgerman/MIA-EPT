@@ -128,7 +128,7 @@ def main(
                     "tabsyn_tpr_fpr_10",
                     "tabsyn_tpr_fpr_1",
                     "tabsyn_tpr_fpr_0.1",
-                    "final_tpr_fpr_10",  # Average TPR at FPR=10% across models
+                    "final_tpr_fpr_10",  # Max TPR at FPR=10% across models
                 ]
             elif type_test == "blackbox_multi_table":
                 fieldnames = [
@@ -139,6 +139,7 @@ def main(
                     "clavaddpm_tpr_fpr_10",
                     "clavaddpm_tpr_fpr_1",
                     "clavaddpm_tpr_fpr_0.1",
+                    "final_tpr_fpr_10",
                 ]
             else:
                 raise ValueError("Invalid type_test value.")

@@ -8,7 +8,7 @@ def main(test_type="blackbox_multi_table"):
 
     print("Starting the pipeline...")
     # Create feature embeddings
-    run_features_extraction.main(test_type)
+    # run_features_extraction.main(test_type)
 
     # Run the classifier for train on 25 models and test on 5 models
     output_dir_train = run_train_classifier.main(type_test=test_type, max_index_classifier_train=25)

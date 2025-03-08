@@ -93,7 +93,7 @@ def save_results(output_dir, model_name, classifier_name, accuracy, auc_roc, tpr
             model_path = result_dir / f"{model_name}_model.json"
             model.save_model(model_path)
 
-        print(f"Model saved to: {model_path}")
+        # print(f"Model saved to: {model_path}")
     else:
         print("Model saving skipped.")
 
@@ -102,7 +102,7 @@ def save_results(output_dir, model_name, classifier_name, accuracy, auc_roc, tpr
     with open(args_path, "w") as f:
         f.write(str(args))
 
-    print(f"Arguments saved to: {args_path}")
+    # print(f"Arguments saved to: {args_path}")
 
     if accuracy:
         # Save results
@@ -254,10 +254,14 @@ def main(args):
             else:
                 raise ValueError(f"Unknown classifier: {args.classifier_name}")
 
-        results[f"{model_name}_accuracy"] = accuracy
-        results[f"{model_name}_auc_roc"] = auc_roc
-        for threshold in fpr_thresholds:
-            results[f"{model_name}_tpr_fpr_{int(threshold * 100)}"] = tpr_at_fpr.get(threshold, 0.0)
+        if accuracy:
+            results[f"{model_name}_accuracy"] = accuracy
+            results[f"{model_name}_auc_roc"] = auc_roc
+            for threshold in fpr_thresholds:
+                if int(threshold * 100) <= 0:
+                    results[f"{model_name}_tpr_fpr_{float(threshold * 100)}"] = tpr_at_fpr.get(threshold, 0.0)
+                else:
+                    results[f"{model_name}_tpr_fpr_{int(threshold * 100)}"] = tpr_at_fpr.get(threshold, 0.0)
 
         # Save results
         save_results(
@@ -274,8 +278,9 @@ def main(args):
         )
 
     if "tabddpm_tpr_fpr_10" in results and "tabsyn_tpr_fpr_10" in results:
-        results["final_tpr_fpr_10"] = max(results["tabddpm_tpr_fpr_10"] + results["tabsyn_tpr_fpr_10"])
-
+        results["final_tpr_fpr_10"] = max(results["tabddpm_tpr_fpr_10"], results["tabsyn_tpr_fpr_10"])
+    elif "clavaddpm_tpr_fpr_10" in results:
+        results["final_tpr_fpr_10"] = results["clavaddpm_tpr_fpr_10"]
     return results
 
 
