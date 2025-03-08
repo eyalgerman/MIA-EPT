@@ -6,8 +6,7 @@ import csv
 import itertools
 import train_classifier
 from argument_parser import ArgumentParser
-from data_manager import DATA_PATH, EMBEDDINGS_DATA_DIR, EVALUATION_DATA_DIR, EVALUATION_DIR
-
+from data_manager import DATA_PATH, EMBEDDINGS_DATA_DIR, EVALUATION_DIR
 
 def run_script_subprocess(script_path, output_dir, max_index_classifier_train, input_embeddings_extraction, classifier_name, save_model, type_test, columns_lst):
     """

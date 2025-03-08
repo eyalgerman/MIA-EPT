@@ -19,7 +19,11 @@ def main(test_type="blackbox_multi_table"):
     train_result_file = output_dir_train / "results_summary.csv"
     train_result_file = pd.read_csv(train_result_file)
 
-    print("Pipeline completed.")
+    print("Output train directory:", output_dir_train)
+    print("Output test directory:", output_dir_test)
+    print("Output of the training results:")
+    train_result_file.sort_values(by=["final_tpr_fpr_10"], ascending=False, inplace=True)
+    print(train_result_file.head(5))
 
 
 if __name__ == "__main__":

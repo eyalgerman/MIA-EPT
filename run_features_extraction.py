@@ -2,6 +2,8 @@ import os
 import subprocess
 from datetime import datetime
 
+from tqdm import tqdm
+
 import features_extraction
 from argument_parser import ArgumentParser
 from data_manager import *
@@ -76,13 +78,17 @@ def main(type_test = "blackbox_multi_table"):
         model_names = ["tabddpm", "tabsyn"]
     elif type_test == "blackbox_multi_table":
         model_names = ["clavaddpm"]
+    else:
+        raise ValueError(f"Invalid type_test: {type_test}")
 
     # Nested loops
-    for model_name in model_names:
+    for model_name in tqdm(model_names, desc="Models"):
         root = f"{DATA_PATH}{model_name}_black_box/"
-        for mode in modes:
+        for mode in tqdm(modes, desc="Modes"):
             base_dir = os.path.join(root, mode)
-            model_folders = [item for item in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, item))]
+            with os.scandir(base_dir) as entries:
+                model_folders = [entry.name for entry in entries if entry.is_dir()]
+            # model_folders = [item for item in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, item))]
             for model_folder in sorted(model_folders, key=lambda d: int(d.split('_')[1])):
                 index_model = int(model_folder.split('_')[1])
                 model_folder = os.path.join(base_dir, model_folder)
