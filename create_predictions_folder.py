@@ -188,6 +188,7 @@ def main(
                         zipf.write(file, arcname=arcname)
                     else:
                         raise FileNotFoundError(f"`prediction.csv` not found in {path}.")
+    print("Submission file created successfully ans saved in:", final_path_predictions)
 
 
 if __name__ == "__main__":
