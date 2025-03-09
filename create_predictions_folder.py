@@ -49,8 +49,11 @@ def get_attack_model(model_path):
     return model
 
 
-# Function to filter and concatenate data based on column suffixes
 def concatenate_data(df, columns_lst):
+    """
+    Function to filter and concatenate data based on column suffixes
+    """
+
     # Create an empty list to store the arrays for concatenation
     concat_list = []
 
@@ -85,6 +88,7 @@ def main(
     prediction_folder = f"{DATA_PATH}predictions_ML_new/"
     timestemp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+    # add end file
     if model_name == "MLP":
         end_file = '.pt'
     elif model_name == "XGBoost" or model_name == "CatBoost":
@@ -92,7 +96,7 @@ def main(
     else:
         raise ValueError("Unknown model name.")
 
-    # Example usage
+
     if type_test == "blackbox_single_table":
         base_tabddpm_train_path = f"{models_path}/tabddpm_model{end_file}"
         base_tabsyn_train_path = f"{models_path}/tabsyn_model{end_file}"

@@ -11,6 +11,9 @@ from data_manager import DATA_PATH, EMBEDDINGS_DATA_DIR, EVALUATION_DIR
 
 def run_script(output_dir, max_index_classifier_train, input_embeddings_extraction, classifier_name, save_model,
                type_test, columns_lst):
+    """
+    Run the classifier training script.
+    """
     args = ArgumentParser().parse()
     args.output_dir = output_dir
     args.max_index_classifier_train = max_index_classifier_train
@@ -26,14 +29,21 @@ def run_script(output_dir, max_index_classifier_train, input_embeddings_extracti
 def main(
     type_test="blackbox_multi_table",
     max_index_classifier_train = 30
-
 ):
+    """
+    Main function to run the classifier training script.
+
+    :param type_test: Type of test (e.g., "blackbox_single_table", "blackbox_multi_table").
+    :param max_index_classifier_train: Number of models to train. Determines if the mode is training or testing.
+    :return: Results output directory.
+    """
 
     base_output_dir = EVALUATION_DIR
     input_embeddings_extraction = EMBEDDINGS_DATA_DIR
+    # Define the types of columns that can be used for the classifier
     columns_type = ["actual", "error", "error_ratio", "accuracy"]
 
-    # Iterate over classifier types and epochs
+    # Iterate over classifier types
     classifier_types = ["XGBoost", "CatBoost", "MLP"]
 
     # Create a timestamped output folder
@@ -45,7 +55,8 @@ def main(
     output_dir = Path(f"{output_dir}_{mode}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    if max_index_classifier_train < 30:
+    # Run the script for each classifier and columns combination
+    if max_index_classifier_train < 30: # Training mode
         # CSV file to save results
         csv_path = output_dir / "results_summary.csv"
         with open(csv_path, mode="w", newline="") as csv_file:
@@ -89,7 +100,6 @@ def main(
                         try:
                             # Run the script and collect results
                             result = run_script(
-                                # script_path=script_path,
                                 output_dir=str(output_dir),
                                 max_index_classifier_train=max_index_classifier_train,
                                 input_embeddings_extraction=input_embeddings_extraction,
@@ -104,7 +114,7 @@ def main(
                             print(f"Results written for {classifier_name}, columns: {columns_lst}")
                         except subprocess.CalledProcessError as e:
                             print(f"Error running script for {classifier_name}")
-    else:
+    else: # Testing mode
         for classifier_name in classifier_types:
             # Generate all possible combinations of all lengths
             for r in range(1, len(columns_type) + 1):
@@ -112,7 +122,6 @@ def main(
                     try:
                         # Run the script and collect results
                         result = run_script(
-                            # script_path=script_path,
                             output_dir=str(output_dir),
                             max_index_classifier_train=max_index_classifier_train,
                             input_embeddings_extraction=input_embeddings_extraction,

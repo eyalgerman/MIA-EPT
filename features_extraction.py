@@ -1,16 +1,10 @@
-import os
-import pandas as pd
 import numpy as np
-from datetime import datetime
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from argument_parser import ArgumentParser
 from data import *
-from data_manager import *
-import argparse
 import torch
 import random
 
@@ -29,18 +23,22 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 
-# def create_output_folder(base_path):
-#     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-#     output_path = os.path.join(base_path, timestamp)
-#     os.makedirs(output_path, exist_ok=True)
-#     return output_path
-
-
 def preprocess_and_train(train_points, test_points, target_col, include_account):
+    """
+    Preprocess the data and train the helper ML models.
+
+    :param train_points: DataFrame containing the training data, including features and the target variable.
+    :param test_points: DataFrame containing the test data, including features and the target variable.
+    :param target_col: String, name of the target variable column.
+    :param include_account: Boolean, if False, the 'account' column is dropped from the dataset.
+    :return: Tuple containing:
+        - predictions (array-like): Model predictions for the test set.
+        - y_test (Series): Actual target values from the test set.
+        - task_type (str): Either 'classification' or 'regression', depending on the nature of the target variable.
+    """
     # Combine data for consistent preprocessing
     train_points['is_train'] = 1
     test_points['is_train'] = 0
-    # test_points['label'] = test_labels
     combined = pd.concat([train_points, test_points], axis=0)
 
     # Drop or retain the 'account' column
@@ -93,6 +91,9 @@ def preprocess_and_train(train_points, test_points, target_col, include_account)
 
 
 def main(args):
+    """
+    Main function to run the feature extraction script.
+    """
     # Parse arguments
     index_model = args.index_model
     model_name = args.model_name
@@ -100,12 +101,13 @@ def main(args):
     mode = args.mode
     model_folder = args.model_folder
 
+    # Load the datasets
     challenge_dataset = ChallengeDataset(model_folder)
     synthetic_dataset = SyntheticDataset(model_folder)
 
+    # Extract the data
     train_points = synthetic_dataset.trans_synthetic_points
     test_points = challenge_dataset.challenge_points
-    # test_labels = challenge_dataset.challenge_labels
 
     # Define target columns (excluding irrelevant ones)
     target_columns = [col for col in train_points.columns if col not in ['label', 'account', 'is_train']]
@@ -131,7 +133,7 @@ def main(args):
             # Calculate the ratio of the error
             error_ratio = errors / y_test
 
-            # i want to save the actual, the error and the ratio error
+            # Save the actual, the error and the ratio error
             features.append(errors)
             features.append(error_ratio)
             columns.append(f"{target_col}_error")

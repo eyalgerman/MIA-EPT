@@ -53,7 +53,6 @@ def main(test_type="blackbox_multi_table"):
     create_predictions_folder.main(time=test_time, type_test=test_type, model_name=row["classifier"], features_lst=features_lst)
 
 
-
 if __name__ == "__main__":
     main()
 

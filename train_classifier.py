@@ -1,6 +1,5 @@
 from fastai.tabular.all import *
 from torch.utils.data import Dataset
-
 from argument_parser import ArgumentParser
 from data import ChallengeDataset
 import argparse
@@ -35,6 +34,9 @@ def set_seed(seed=42):
 
 
 class MLPClassifier(nn.Module):
+    """
+    Multi-Layer Perceptron (MLP) classifier.
+    """
     def __init__(self, input_size=100, hidden_size=64, output_size=1):
         super(MLPClassifier, self).__init__()
         self.layers = nn.Sequential(
@@ -49,6 +51,9 @@ class MLPClassifier(nn.Module):
 
 
 def train_mlp(X_train, y_train, X_test, y_test, epochs, device, eval):
+    """
+    Train an MLP classifier and evaluate it on the test set.
+    """
     input_size = X_train.shape[1]
     model = MLPClassifier(input_size=input_size).to(device)
     criterion = nn.BCELoss()
@@ -58,6 +63,7 @@ def train_mlp(X_train, y_train, X_test, y_test, epochs, device, eval):
     if eval:
         X_test, y_test = torch.tensor(X_test, dtype=torch.float32).to(device), torch.tensor(y_test, dtype=torch.float32).to(device)
 
+    # Train the model
     for epoch in range(epochs):
         model.train()
         optimizer.zero_grad()
@@ -80,6 +86,9 @@ def train_mlp(X_train, y_train, X_test, y_test, epochs, device, eval):
 
 def save_results(output_dir, model_name, classifier_name, accuracy, auc_roc, tpr_at_fpr, fpr_values, model, args,
                  save_model=True):
+    """
+    Saves model training results, arguments, and optionally the trained model.
+    """
     columns_str = str(args.columns_lst).replace("[", "").replace("]", "").replace("'", "")
     result_dir = Path(output_dir) / f"{classifier_name}_{columns_str}"
     result_dir.mkdir(parents=True, exist_ok=True)
@@ -92,7 +101,6 @@ def save_results(output_dir, model_name, classifier_name, accuracy, auc_roc, tpr
         else:
             model_path = result_dir / f"{model_name}_model.json"
             model.save_model(model_path)
-
         # print(f"Model saved to: {model_path}")
     else:
         print("Model saving skipped.")
@@ -101,7 +109,6 @@ def save_results(output_dir, model_name, classifier_name, accuracy, auc_roc, tpr
     args_path = result_dir / "args.txt"
     with open(args_path, "w") as f:
         f.write(str(args))
-
     # print(f"Arguments saved to: {args_path}")
 
     if accuracy:
@@ -121,8 +128,11 @@ def save_results(output_dir, model_name, classifier_name, accuracy, auc_roc, tpr
             print(f"TPR at FPR={fpr:.1%}: {tpr:.4f}")
 
 
-# Function to filter and concatenate data based on column suffixes
 def concatenate_data(features, args):
+    """
+    Function to filter and concatenate data based on column suffixes
+    """
+
     # Create an empty list to store the arrays for concatenation
     concat_list = []
 
@@ -152,11 +162,21 @@ def concatenate_data(features, args):
 
 
 def main(args):
+    """
+    Main function to train and evaluate classifiers on embeddings extracted from synthetic data.
+
+    :param args : argument_parser.ArgumentParser
+        Command-line arguments containing parameters such as test type, classifier type, dataset paths, and other settings.
+    Returns:
+        dict: Dictionary containing evaluation metrics such as accuracy, AUC-ROC, and TPR at specific FPR thresholds.
+    """
+
     # Set seed for reproducibility
     set_seed(args.seed)
     max_model_number = 30
     fpr_thresholds = [0.1, 0.01, 0.001]  # 10%, 1%, 0.1%
 
+    # Determine models based on the test type
     if args.type_test == 'blackbox_single_table':
         model_names = ["tabddpm", "tabsyn"]
     elif args.type_test == 'blackbox_multi_table':
@@ -164,11 +184,13 @@ def main(args):
     else:
         raise ValueError(f"Unknown test type: {args.type_test}")
 
+    # Initialize results dictionary
     results = {
         "columns_lst": " ".join(args.columns_lst),
         "classifier": args.classifier_name,
     }
 
+    # Iterate through each model for training and evaluation
     for model_name in model_names:
         X_train, y_train = [], []
         X_test, y_test = [], []
@@ -193,7 +215,7 @@ def main(args):
 
         accuracy, auc_roc, tpr_at_fpr, test_results = None, None, None, None
 
-        if args.max_index_classifier_train < max_model_number:
+        if args.max_index_classifier_train < max_model_number: # Training mode
             # Load embeddings and labels
             for i in range(args.max_index_classifier_train + 1, max_model_number + 1):
                 # Set paths
@@ -238,10 +260,9 @@ def main(args):
             tpr_at_fpr = {}
             for threshold in fpr_thresholds:
                 tpr_at_fpr[threshold] = max(tpr[fpr < threshold])
-                # tpr_at_fpr[threshold] = tpr[np.argmax(fpr >= threshold)] if any(fpr >= threshold) else 0.0
 
-        else:
-            # Train the classifier
+        else: # Testing mode
+            # Train the classifier without evaluation
             if args.classifier_name == "XGBoost":
                 model = XGBClassifier()
                 model.fit(X_train, y_train)
@@ -254,6 +275,7 @@ def main(args):
             else:
                 raise ValueError(f"Unknown classifier: {args.classifier_name}")
 
+        # Store results
         if accuracy:
             results[f"{model_name}_accuracy"] = accuracy
             results[f"{model_name}_auc_roc"] = auc_roc
@@ -277,6 +299,7 @@ def main(args):
             save_model=args.save_model
         )
 
+    # Compute final TPR at 10% FPR across models
     if "tabddpm_tpr_fpr_10" in results and "tabsyn_tpr_fpr_10" in results:
         results["final_tpr_fpr_10"] = max(results["tabddpm_tpr_fpr_10"], results["tabsyn_tpr_fpr_10"])
     elif "clavaddpm_tpr_fpr_10" in results:
