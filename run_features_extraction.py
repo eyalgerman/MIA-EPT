@@ -8,44 +8,6 @@ import features_extraction
 from argument_parser import ArgumentParser
 from data_manager import *
 
-def run_embeddings_extraction_subprocess(model_folder, model_name, output_dir, index_model, mode, include_account=False):
-    """
-    Run the features_extraction.py script with the given parameters.
-
-    Args:
-        model_name (str): Name of the model (e.g., "tabddpm", "tabsyn").
-        output_dir (str): Output directory to save results.
-        index_model (int): Index of the model.
-        epoch (int): Epoch number.
-        mode (str): Mode to run (e.g., "train", "dev", "test").
-    """
-    code_folder = "/dt/shabtaia/dt-sicpa/daniel/MIDST"
-    python_script = os.path.join(code_folder, "features_extraction.py")
-
-    python_path = "/sise/home/samirada/.conda/envs/gpu_env/bin/python3.9"
-    if include_account:
-        cmd = [
-            python_path, python_script,
-            "--model_folder", model_folder,
-            "--model_name", model_name,
-            "--output_dir", output_dir,
-            "--index_model", str(index_model),
-            "--mode", mode,
-            "--include_account"
-        ]
-    else:
-        cmd = [
-            python_path, python_script,
-            "--model_folder", model_folder,
-            "--model_name", model_name,
-            "--output_dir", output_dir,
-            "--index_model", str(index_model),
-            "--mode", mode
-        ]
-
-    print(f"Running command: {' '.join(cmd)}")
-    subprocess.run(cmd, check=True)
-
 
 def run_features_extraction(model_folder, model_name, output_dir, index_model, mode, include_account=False):
     """
