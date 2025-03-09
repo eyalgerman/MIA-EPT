@@ -78,10 +78,10 @@ def main(
     model_name = "CatBoost", #or XGBoost or MLP
     features_lst = ["actual", "error", "error_ratio", "accuracy"]
 ):
-    features = " ".join(features_lst)
+    features = ", ".join(features_lst)
 
     embeddings_extraction_path = EMBEDDINGS_DATA_DIR
-    models_path = f"{EVALUATION_DIR}{type_test}/{time}/{model_name}_{features}"
+    models_path = f"{EVALUATION_DIR}{type_test}/{time}/{model_name}_({features})"
     prediction_folder = f"{DATA_PATH}predictions_ML_new/"
     timestemp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
