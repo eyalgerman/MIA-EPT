@@ -1,8 +1,9 @@
-from fastai.tabular.all import *
-from torch.utils.data import Dataset
+# from fastai.tabular.all import *
+# from torch.utils.data import Dataset
+# import argparse
+# from datetime import datetime
 from argument_parser import ArgumentParser
 from data import ChallengeDataset
-import argparse
 import pandas as pd
 import os
 from pathlib import Path
@@ -10,10 +11,8 @@ import torch
 from sklearn.metrics import accuracy_score, roc_curve, auc
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
-from sklearn.model_selection import train_test_split
 import torch.nn as nn
 import torch.optim as optim
-from datetime import datetime
 import random
 import numpy as np
 from data_manager import *
@@ -260,6 +259,20 @@ def main(args):
             tpr_at_fpr = {}
             for threshold in fpr_thresholds:
                 tpr_at_fpr[threshold] = max(tpr[fpr < threshold])
+
+            # Save per-record predictions for later ROC AUC curve plotting
+            if accuracy is not None:
+                prediction_df = pd.DataFrame({
+                    "y_true": y_test,
+                    "y_proba": y_proba,
+                    "y_pred": y_pred
+                })
+                columns_str = str(args.columns_lst).replace("[", "").replace("]", "").replace("'", "")
+                result_dir = Path(args.output_dir) / f"{args.classifier_name}_{columns_str}"
+                result_dir.mkdir(parents=True, exist_ok=True)
+                pred_path = result_dir / f"{model_name}_prediction.csv"
+                prediction_df.to_csv(pred_path, index=False)
+                print(f"Per-record predictions saved to: {pred_path}")
 
         else: # Testing mode
             # Train the classifier without evaluation
