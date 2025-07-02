@@ -137,10 +137,11 @@ def concatenate_data(features, args):
 
     # Define suffix mapping based on args.columns_lst
     suffix_mapping = {
-        'actual': lambda x: not (x.endswith('error') or x.endswith('error_ratio') or x.endswith('accuracy')),
+        'actual': lambda x: not (x.endswith('error') or x.endswith('error_ratio') or x.endswith('accuracy') or x.endswith('prediction')),
         'error': lambda x: x.endswith('error'),
         'error_ratio': lambda x: x.endswith('error_ratio'),
-        'accuracy': lambda x: x.endswith('accuracy')
+        'accuracy': lambda x: x.endswith('accuracy'),
+        'prediction': lambda x: x.endswith('prediction'),
     }
 
     if len(args.columns_lst) == 1 and "," in args.columns_lst[0]:

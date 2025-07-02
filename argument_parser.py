@@ -41,7 +41,7 @@ class ArgumentParser:
         self.parser.add_argument("--type_test", type=str, default='blackbox_multi_table',
                                  help="Type of test: test or dev")
         self.parser.add_argument("--columns_lst", nargs='+', type=str,
-                                 default=["actual", "error", "error_ratio", "accuracy"],
+                                 default=["actual", "error", "error_ratio", "accuracy", "prediction"],
                                  help="List of columns to be used for the classifier")
 
         # Create output folder

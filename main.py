@@ -54,5 +54,5 @@ def main(test_type="blackbox_multi_table"):
 
 
 if __name__ == "__main__":
-    main()
+    main(test_type="blackbox_single_table")
 

@@ -118,6 +118,7 @@ def main(args):
         # print(f"Target Column: {target_col}")
         predictions, y_test, task_type = preprocess_and_train(train_points, test_points, target_col, args.include_account)
 
+        # actual values from the test set
         features.append(y_test)
         columns.append(target_col)
 
@@ -133,11 +134,15 @@ def main(args):
             # Calculate the ratio of the error
             error_ratio = errors / y_test
 
-            # Save the actual, the error and the ratio error
+            # Save the error and the ratio error
             features.append(errors)
             features.append(error_ratio)
             columns.append(f"{target_col}_error")
             columns.append(f"{target_col}_error_ratio")
+
+        # predictions from the model
+        features.append(predictions)
+        columns.append(f"{target_col}_prediction")
 
     # Create a DataFrame with the results
     results_df = pd.DataFrame(features).T

@@ -59,10 +59,11 @@ def concatenate_data(df, columns_lst):
 
     # Define suffix mapping based on args.columns_lst
     suffix_mapping = {
-        'actual': lambda x: not (x.endswith('error') or x.endswith('error_ratio') or x.endswith('accuracy')),
+        'actual': lambda x: not (x.endswith('error') or x.endswith('error_ratio') or x.endswith('accuracy') or x.endswith('prediction')),
         'error': lambda x: x.endswith('error'),
         'error_ratio': lambda x: x.endswith('error_ratio'),
-        'accuracy': lambda x: x.endswith('accuracy')
+        'accuracy': lambda x: x.endswith('accuracy'),
+        'prediction': lambda x: x.endswith('prediction')
     }
 
     columns_lst = [col.strip() for col in columns_lst]
@@ -79,7 +80,7 @@ def main(
     time = "20250218_115430_test",
     type_test = "blackbox_multi_table",
     model_name = "CatBoost", #or XGBoost or MLP
-    features_lst = ["actual", "error", "error_ratio", "accuracy"]
+    features_lst = ["actual", "error", "error_ratio", "accuracy", "prediction"]  # List of features to be used for the classifier
 ):
     features = ", ".join(features_lst)
 

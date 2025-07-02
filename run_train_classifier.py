@@ -41,7 +41,7 @@ def main(
     base_output_dir = EVALUATION_DIR
     input_embeddings_extraction = EMBEDDINGS_DATA_DIR
     # Define the types of columns that can be used for the classifier
-    columns_type = ["actual", "error", "error_ratio", "accuracy"]
+    columns_type = ["actual", "error", "error_ratio", "accuracy", "prediction"]
 
     # Iterate over classifier types
     classifier_types = ["XGBoost", "CatBoost", "MLP"]
