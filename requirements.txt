@@ -1,5 +1,4 @@
 catboost==1.2.7
-fastai==2.7.18
 numpy==1.26.4
 pandas==1.5.3
 scikit_learn==1.4.2
